@@ -1,4 +1,4 @@
-# Raol APIs
+# Nagato Api 
 
 <div align="center">
   <img src="https://github.com/raolbyte/raolbyte/blob/main/banner.png" alt="Raol APIs Logo" width="120" height="120">
