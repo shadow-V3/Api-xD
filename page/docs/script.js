@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", async () => {
   const DOM = {
     loadingScreen: document.getElementById("loadingScreen"),
@@ -68,20 +69,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     const url = new URL(window.location.origin + window.location.pathname)
     const apiId = generateApiId(apiData)
     url.searchParams.set("share", apiId)
-    
+
     const inputs = DOM.modal.queryInputContainer.querySelectorAll("input")
     const params = new URLSearchParams()
-    
+
     inputs.forEach((input) => {
       if (input.value.trim()) {
         params.append(input.dataset.param, input.value.trim())
       }
     })
-    
+
     if (params.toString()) {
       url.searchParams.set("params", params.toString())
     }
-    
+
     return url.toString()
   }
 
@@ -165,17 +166,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (paramsString) {
         const params = new URLSearchParams(paramsString)
         const inputs = DOM.modal.queryInputContainer.querySelectorAll("input")
-        
+
         inputs.forEach((input) => {
           const paramValue = params.get(input.dataset.param)
           if (paramValue) {
             input.value = paramValue
           }
         })
-        
+
         validateModalInputs()
       }
-      
+
       DOM.modal.instance.show()
       showToast(`Opened shared API: ${apiData.name}`, "info", "Share Link")
     }, 500)
@@ -208,7 +209,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       bsToast = new window.bootstrap.Toast(DOM.notificationToast)
     }
     bsToast.show()
-    
+
     addSwipeToDismiss(DOM.notificationToast)
   }
 
@@ -229,15 +230,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const handleMove = (e) => {
       if (!isDragging) return
-      
+
       currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX
       const deltaX = currentX - startX
       const deltaY = Math.abs((e.type === 'touchmove' ? e.touches[0].clientY : e.clientY) - startY)
-      
+
       if (Math.abs(deltaX) > 10 || deltaY > 10) {
         hasMoved = true
       }
-      
+
       if (Math.abs(deltaX) > deltaY && Math.abs(deltaX) > 10) {
         e.preventDefault()
         const translateX = Math.max(deltaX, -toastElement.offsetWidth)
@@ -248,17 +249,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const handleEnd = () => {
       if (!isDragging) return
-      
+
       isDragging = false
       toastElement.classList.remove('swiping')
-      
+
       const deltaX = currentX - startX
       const threshold = toastElement.offsetWidth * 0.3
-      
+
       if (Math.abs(deltaX) > threshold && hasMoved) {
         toastElement.style.transform = `translateX(${deltaX > 0 ? toastElement.offsetWidth : -toastElement.offsetWidth}px)`
         toastElement.style.opacity = '0'
-        
+
         setTimeout(() => {
           const bsToast = window.bootstrap.Toast.getInstance(toastElement)
           if (bsToast) {
@@ -274,7 +275,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     toastElement.addEventListener('touchstart', handleStart, { passive: false })
     toastElement.addEventListener('touchmove', handleMove, { passive: false })
     toastElement.addEventListener('touchend', handleEnd)
-    
+
     toastElement.addEventListener('mousedown', handleStart)
     toastElement.addEventListener('mousemove', handleMove)
     toastElement.addEventListener('mouseup', handleEnd)
@@ -703,11 +704,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!settings || Object.keys(settings).length === 0) return
 
     const currentYear = new Date().getFullYear()
-    const creator = settings.apiSettings?.creator || "Raol Api'S"
+    const creator = settings.apiSettings?.creator || "Nagato Api'S"
 
-    setPageContent(DOM.pageTitle, settings.name, "Raol Api'S")
-    setPageContent(DOM.wm, `© ${currentYear} Raol Api'S Corp. All rights reversed.`)
-    setPageContent(DOM.appName, settings.name, "Raol Api'S")
+    setPageContent(DOM.pageTitle, settings.name, "Nagato Api'S")
+    setPageContent(DOM.wm, `© ${currentYear} Nagato Api'S Corp. All rights reversed.`)
+    setPageContent(DOM.appName, settings.name, "Nagato Api'S")
     setPageContent(DOM.sideNavName, settings.name || "API")
     setPageContent(DOM.versionBadge, settings.version, "v1.0")
     setPageContent(DOM.versionHeaderBadge, settings.header?.status, "Active!")
@@ -1276,7 +1277,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return
           }
         }
-        
+
         showToast(`API request failed: ${errorData.message || response.statusText}`, "error", "Request Failed")
 
         throw new Error(`HTTP error! Status: ${response.status} - ${errorData.message || response.statusText}`)
