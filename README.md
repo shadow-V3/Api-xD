@@ -1,7 +1,7 @@
 # Nagato Api 
 
 <div align="center">
-  <img src="https://github.com/raolbyte/raolbyte/blob/main/banner.png" alt="Raol APIs Logo" width="120" height="120">
+  <img src="https://raw.githubusercontent.com/El-brayan502/dat3/main/uploads/9868df-1762558122218.png" alt="Raol APIs Logo" width="120" height="120">
   
   **Simple and easy to use API with Discord Bot Integration.**
   
