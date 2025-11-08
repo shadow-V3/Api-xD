@@ -102,8 +102,7 @@
           "params": {
             "url": "YouTube video URL"
           }
-        },
-        
+        }, 
         {
           "name": "YouTube MP3 V2",
           "desc": "Download audio in MP3 V2 format from YouTube",
@@ -113,7 +112,15 @@
             "url": "YouTube video URL"
           }
         },
-        
+        {
+          "name": "YouTube MP4 V2",
+          "desc": "Download video in MP4 V2 format from YouTube",
+          "path": "/download/ytmp4V2?url=",
+          "status": "ready",
+          "params": {
+            "url": "YouTube video URL"
+          }
+        }, 
         {
           "name": "Facebook Downloader",
           "desc": "Download videos or reels from Facebook",

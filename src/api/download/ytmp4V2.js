@@ -67,7 +67,7 @@ const savetube = {
     if (!response.status) return response;
     return { status: true, code: 200, data: response.data.cdn };
   },
-  download: async (link) => {
+  downloadVideo: async (link) => {
     if (!link) return { status: false, code: 400, error: "Falta el enlace de YouTube." };
     const id = savetube.youtube(link);
     if (!id) return { status: false, code: 400, error: "No se pudo extraer el ID del video." };
@@ -86,8 +86,8 @@ const savetube = {
 
       const dl = await savetube.request(`https://${cdn}${savetube.api.download}`, {
         id: id,
-        downloadType: "audio",
-        quality: "128",
+        downloadType: "video",
+        quality: "480",
         key: decrypted.key,
       });
 
@@ -98,7 +98,7 @@ const savetube = {
         code: 200,
         data: {
           metadata: {
-            type: "audio",
+            type: "video",
             videoId: id,
             url: `https://youtube.com/watch?v=${id}`,
             title: decrypted.title || "Desconocido",
@@ -117,9 +117,9 @@ const savetube = {
           },
           download: {
             status: true,
-            quality: "128kbps",
+            quality: "360p",
             url: dl.data.data.downloadUrl,
-            filename: `${decrypted.title || "audio"} (128kbps).mp3`,
+            filename: `${decrypted.title || "video"} (360p).mp4`,
           },
           creator: "Shadow.xyz",
         },
@@ -131,14 +131,14 @@ const savetube = {
 };
 
 export default (app) => {
-  app.get("/download/ytmp3V2", createApiKeyMiddleware(), async (req, res) => {
+  app.get("/download/ytmp4V2", createApiKeyMiddleware(), async (req, res) => {
     try {
       const { url } = req.query;
       if (!url || url.trim() === "") {
         return res.status(400).json({ status: false, error: "URL is required" });
       }
 
-      const result = await savetube.download(url.trim());
+      const result = await savetube.downloadVideo(url.trim());
       if (!result.status) {
         return res.status(result.code || 500).json({ status: false, error: result.error });
       }
