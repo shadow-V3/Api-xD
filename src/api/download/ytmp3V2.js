@@ -84,6 +84,14 @@ const savetube = {
 
       const decrypted = await savetube.crypto.decrypt(infoRes.data.data);
 
+      // Tamaño en MB
+      const sizeMB = decrypted.filesize ? (decrypted.filesize / (1024 * 1024)).toFixed(2) : null;
+
+      // Tiempo en mm:ss
+      const durationSec = decrypted.duration || null;
+      const timestamp = durationSec != null ? `${Math.floor(durationSec / 60)}:${durationSec % 60}` : null;
+
+      // Descarga
       const dl = await savetube.request(`https://${cdn}${savetube.api.download}`, {
         id: id,
         downloadType: "audio",
@@ -91,34 +99,31 @@ const savetube = {
         key: decrypted.key,
       });
 
-      const sizeMB = decrypted.filesize ? (decrypted.filesize / (1024 * 1024)).toFixed(2) : null;
-
       return {
         status: true,
-        code: 200,
         data: {
           metadata: {
             type: "audio",
             videoId: id,
-            url: `https://youtube.com/watch?v=${id}`,
-            title: decrypted.title || "Desconocido",
-            description: decrypted.description || "",
+            url: `https://youtube.com/watch?v=${id}` || null,
+            title: decrypted.title || null,
+            description: decrypted.description || null,
             image: decrypted.thumbnail || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
             thumbnail: decrypted.thumbnail || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
-            seconds: decrypted.duration,
-            timestamp: `${Math.floor(decrypted.duration / 60)}:${decrypted.duration % 60}`,
+            seconds: durationSec,
+            timestamp: timestamp,
             sizeMB: sizeMB ? `${sizeMB} MB` : null,
             views: decrypted.views || null,
             ago: decrypted.ago || null,
             author: {
-              name: decrypted.channel || "Desconocido",
-              url: decrypted.channelUrl || `https://youtube.com/channel/unknown`,
+              name: decrypted.channel || null,
+              url: decrypted.channelUrl || null,
             },
           },
           download: {
             status: true,
             quality: "128kbps",
-            url: dl.data.data.downloadUrl,
+            url: dl.data?.data?.downloadUrl || null,
             filename: `${decrypted.title || "audio"} (128kbps).mp3`,
           },
           creator: "Shadow.xyz",
@@ -151,7 +156,6 @@ export default (app) => {
         meta: {
           timestamp: new Date().toISOString(),
           api: "Shadow.xyz",
-          version: "v2",
         },
       });
     } catch (error) {
