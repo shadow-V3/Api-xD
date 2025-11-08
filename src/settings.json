@@ -45,9 +45,9 @@
           }
         },
         {
-          "name": "Simsimi",
+          "name": "chatgpt",
           "desc": "Friendly conversational AI powered by Simsimi for chat responses",
-          "path": "/ai/simsimi?text=",
+          "path": "/ai/chatgpt?text=",
           "status": "online",
           "params": {
             "text": "Text message for the AI to respond to"
