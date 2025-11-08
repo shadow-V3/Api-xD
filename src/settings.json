@@ -12,7 +12,7 @@
     "status": "Online"
   },
   "apiSettings": {
-    "creator": "ShadowByte",
+    "creator": "Shadow.xyz",
     "requireApikey": false,
     "apikey": {
       "demo": {
@@ -99,7 +99,7 @@
         {
           "name": "YouTube MP3",
           "desc": "Download audio in MP3 format from YouTube",
-          "path": "/download/youtube?url=",
+          "path": "/download/ytmp3?url=",
           "status": "ready",
           "params": {
             "url": "YouTube video URL"
