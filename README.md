@@ -64,7 +64,7 @@ node -v # Should print "v22.x.x"
 npm -v # Should print "10.x.x"
 ```
 
-#### Alternative: Direct Node.js Installation
+#### Alternativa: Instalación directa de Node.js 
 
 Si prefiere no usar NVM, puede instalar Node.js directamente: 
 
