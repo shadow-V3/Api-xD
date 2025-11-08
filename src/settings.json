@@ -63,7 +63,7 @@
       "items": [
         {
           "name": "NSFW",
-          "desc": "Get random high-quality Blue Archive character images",
+          "desc": "Get random high-quality NSFW waifu images",
           "path": "/nsfw/nsfw1",
           "status": "ready"
         }

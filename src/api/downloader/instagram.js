@@ -157,7 +157,7 @@ export default (app) => {
     }
   }
 
-  app.get("/downloader/instagram", createApiKeyMiddleware(), async (req, res) => {
+  app.get("/download/instagram", createApiKeyMiddleware(), async (req, res) => {
     try {
       const { url } = req.query
 
@@ -195,7 +195,7 @@ export default (app) => {
     }
   })
 
-  app.post("/downloader/instagram", createApiKeyMiddleware(), async (req, res) => {
+  app.post("/download/instagram", createApiKeyMiddleware(), async (req, res) => {
     try {
       const { url } = req.body
 

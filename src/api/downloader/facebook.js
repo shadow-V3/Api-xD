@@ -92,7 +92,7 @@ export default (app) => {
     }
   }
 
-  app.get("/downloader/facebook", createApiKeyMiddleware(), async (req, res) => {
+  app.get("/download/facebook", createApiKeyMiddleware(), async (req, res) => {
     try {
       const { url } = req.query
 
@@ -130,7 +130,7 @@ export default (app) => {
     }
   })
 
-  app.post("/downloader/facebook", createApiKeyMiddleware(), async (req, res) => {
+  app.post("/download/facebook", createApiKeyMiddleware(), async (req, res) => {
     try {
       const { url } = req.body
 

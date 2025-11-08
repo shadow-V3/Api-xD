@@ -77,7 +77,7 @@ export default (app) => {
     }
   }
 
-  app.get("/downloader/spotify", createApiKeyMiddleware(), async (req, res) => {
+  app.get("/download/spotify", createApiKeyMiddleware(), async (req, res) => {
     try {
       const { url } = req.query
 
@@ -115,7 +115,7 @@ export default (app) => {
     }
   })
 
-  app.post("/downloader/spotify", createApiKeyMiddleware(), async (req, res) => {
+  app.post("/download/spotify", createApiKeyMiddleware(), async (req, res) => {
     try {
       const { url } = req.body
 

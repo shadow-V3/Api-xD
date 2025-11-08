@@ -4,10 +4,8 @@ import { createApiKeyMiddleware } from "../../middleware/apikey.js"
 export default (app) => {
   async function getWaifuNSFW() {
     try {
-      // 1. Obtener la URL del JSON
       const { data } = await axios.get("https://api.waifu.pics/nsfw/waifu")
 
-      // 2. Descargar la imagen con User-Agent para evitar 404
       const response = await axios.get(data.url, {
         responseType: "arraybuffer",
         headers: {
@@ -35,12 +33,12 @@ export default (app) => {
       })
       res.end(buffer)
 
-      console.log("🙂 NSFW waifu enviada con éxito")
+      console.log("NSFW waifu enviada con éxito")
 
     } catch (error) {
       res.status(500).json({
         status: false,
-        message: "❌ No se pudo obtener la imagen NSFW",
+        message: "No se pudo obtener la imagen NSFW",
         error: error.message
       })
     }
