@@ -703,11 +703,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!settings || Object.keys(settings).length === 0) return
 
     const currentYear = new Date().getFullYear()
-    const creator = settings.apiSettings?.creator || "Nagato Api'S"
+    const creator = settings.apiSettings?.creator || "Shadow's Api'S"
 
-    setPageContent(DOM.pageTitle, settings.name, "Nagato Api'S")
-    setPageContent(DOM.wm, `© ${currentYear} Nagato Api'S Corp. All rights reversed.`)
-    setPageContent(DOM.appName, settings.name, "Nagato Api'S")
+    setPageContent(DOM.pageTitle, settings.name, "Shadow's Api'S")
+    setPageContent(DOM.wm, `© ${currentYear} Shadow's Api'S Corp. All rights reversed.`)
+    setPageContent(DOM.appName, settings.name, "Shadow's Api'S")
     setPageContent(DOM.sideNavName, settings.name || "API")
     setPageContent(DOM.versionBadge, settings.version, "v1.0")
     setPageContent(DOM.versionHeaderBadge, settings.header?.status, "Active!")

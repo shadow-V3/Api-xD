@@ -112,7 +112,7 @@ export function validateApiKey(req, res, next) {
   if (!checkRateLimit(apikey)) {
     return res.status(429).json({
       status: false,
-      creator: settings?.apiSettings?.creator || "NagatoByte",
+      creator: settings?.apiSettings?.creator || "Shadow.xyz",
       error: "Rate limit exceeded",
       message: "You have exceeded the rate limit for this API key"
     })
