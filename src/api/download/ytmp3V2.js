@@ -1,7 +1,6 @@
 import { createApiKeyMiddleware } from "../../middleware/apikey.js";
 import axios from "axios";
 import crypto from "crypto";
-import ytdl from "ytdl-core";
 
 const savetube = {
   api: {
@@ -25,9 +24,9 @@ const savetube = {
       const iv = data.slice(0, 16);
       const content = data.slice(16);
       const key = savetube.crypto.hexToBuffer(secretKey);
+
       const decipher = crypto.createDecipheriv("aes-128-cbc", key, iv);
-      let decrypted = decipher.update(content);
-      decrypted = Buffer.concat([decrypted, decipher.final()]);
+      let decrypted = Buffer.concat([decipher.update(content), decipher.final()]);
       return JSON.parse(decrypted.toString());
     },
   },
@@ -63,94 +62,98 @@ const savetube = {
     if (!response.status) return response;
     return { status: true, code: 200, data: response.data.cdn };
   },
-  download: async (link) => {
-    if (!link) return { status: false, code: 400, error: "Falta el enlace de YouTube." };
-    const id = savetube.youtube(link);
-    if (!id) return { status: false, code: 400, error: "No se pudo extraer el ID del video." };
+};
 
+export default (app) => {
+
+  // VIDEO
+  app.get("/download/ytmp4V2", createApiKeyMiddleware(), async (req, res) => {
     try {
+      const { url } = req.query;
+      if (!url) return res.status(400).json({ status: false, error: "URL is required" });
+
+      const id = savetube.youtube(url);
+      if (!id) return res.status(400).json({ status: false, error: "Invalid YouTube URL." });
+
       const cdnRes = await savetube.getCDN();
-      if (!cdnRes.status) return cdnRes;
+      if (!cdnRes.status) return res.status(cdnRes.code).json(cdnRes);
+
       const cdn = cdnRes.data;
-
-      const infoRes = await savetube.request(`https://${cdn}${savetube.api.info}`, {
-        url: `https://www.youtube.com/watch?v=${id}`,
-      });
-      if (!infoRes.status) return infoRes;
-
+      const infoRes = await savetube.request(`https://${cdn}${savetube.api.info}`, { url: `https://www.youtube.com/watch?v=${id}` });
       const decrypted = await savetube.crypto.decrypt(infoRes.data.data);
 
-      // Descarga
       const dl = await savetube.request(`https://${cdn}${savetube.api.download}`, {
-        id: id,
+        id,
+        downloadType: "video",
+        quality: "480",
+        key: decrypted.key,
+      });
+
+      const data = {
+        title: decrypted.title || "Desconocido",
+        duration: decrypted.duration ? `${Math.floor(decrypted.duration / 60)}:${String(decrypted.duration % 60).padStart(2, "0")}` : "Desconocido",
+        youtube_url: `https://youtube.com/watch?v=${id}`,
+        download_url: dl.data?.data?.downloadUrl || null,
+        thumbnail: decrypted.thumbnail || `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`
+      };
+
+      return res.json({
+        status: true,
+        status_code: 200,
+        creator: "Shadow.xyz",
+        result: data,
+        meta: {
+          timestamp: new Date().toISOString(),
+          version: "v2"
+        }
+      });
+
+    } catch (error) {
+      res.status(500).json({ status: false, error: error.message });
+    }
+  });
+
+  app.get("/download/ytmp3V2", createApiKeyMiddleware(), async (req, res) => {
+    try {
+      const { url } = req.query;
+      if (!url) return res.status(400).json({ status: false, error: "URL is required" });
+
+      const id = savetube.youtube(url);
+      if (!id) return res.status(400).json({ status: false, error: "Invalid YouTube URL." });
+
+      const cdnRes = await savetube.getCDN();
+      if (!cdnRes.status) return res.status(cdnRes.code).json(cdnRes);
+
+      const cdn = cdnRes.data;
+      const infoRes = await savetube.request(`https://${cdn}${savetube.api.info}`, { url: `https://www.youtube.com/watch?v=${id}` });
+      const decrypted = await savetube.crypto.decrypt(infoRes.data.data);
+
+      const dl = await savetube.request(`https://${cdn}${savetube.api.download}`, {
+        id,
         downloadType: "audio",
         quality: "128",
         key: decrypted.key,
       });
 
-      // Metadata fallback con ytdl-core
-      let ytInfo;
-      try {
-        ytInfo = await ytdl.getInfo(`https://youtube.com/watch?v=${id}`);
-      } catch (e) {
-        ytInfo = null;
-      }
-
-      const videoDetails = ytInfo?.videoDetails;
-
-      return {
-        status: true,
-        data: {
-          metadata: {
-            type: "audio",
-            videoId: id,
-            url: `https://youtube.com/watch?v=${id}`,
-            title: videoDetails?.title || decrypted.title || "Sin título",
-            description: videoDetails?.description || decrypted.description || "",
-            image: videoDetails?.thumbnails?.[videoDetails.thumbnails.length - 1]?.url || decrypted.thumbnail,
-            thumbnail: videoDetails?.thumbnails?.[videoDetails.thumbnails.length - 1]?.url || decrypted.thumbnail,
-            seconds: videoDetails ? parseInt(videoDetails.lengthSeconds) : decrypted.duration || 0,
-            timestamp: videoDetails
-              ? `${Math.floor(videoDetails.lengthSeconds / 60)}:${videoDetails.lengthSeconds % 60}`
-              : decrypted.duration
-              ? `${Math.floor(decrypted.duration / 60)}:${decrypted.duration % 60}`
-              : "0:00",
-            sizeMB: decrypted.filesize ? (decrypted.filesize / (1024 * 1024)).toFixed(2) + " MB" : "",
-            views: videoDetails?.viewCount || decrypted.views || "",
-            ago: decrypted.ago || "",
-            author: {
-              name: videoDetails?.author?.name || decrypted.channel || "",
-              url: videoDetails?.author?.channel_url || decrypted.channelUrl || "",
-            },
-          },
-          download: {
-            quality: "128kbps",
-            url: dl.data?.data?.downloadUrl || "",
-            filename: decrypted.title ? `${decrypted.title} (128kbps).mp3` : "",
-          },
-          creator: "Shadow.xyz",
-        },
+      const data = {
+        title: decrypted.title || "Desconocido",
+        duration: decrypted.duration ? `${Math.floor(decrypted.duration / 60)}:${String(decrypted.duration % 60).padStart(2, "0")}` : "Desconocido",
+        youtube_url: `https://youtube.com/watch?v=${id}`,
+        download_url: dl.data?.data?.downloadUrl || null,
+        thumbnail: decrypted.thumbnail || `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`
       };
-    } catch (error) {
-      return { status: false, code: 500, error: error.message };
-    }
-  },
-};
 
-export default (app) => {
-  app.get("/download/ytmp3V2", createApiKeyMiddleware(), async (req, res) => {
-    try {
-      const { url } = req.query;
-      if (!url || url.trim() === "") {
-        return res.status(400).json({ status: false, error: "URL is required" });
-      }
+      return res.json({
+        status: true,
+        status_code: 200,
+        creator: "Shadow.xyz",
+        result: data,
+        meta: {
+          timestamp: new Date().toISOString(),
+          version: "v2"
+        }
+      });
 
-      const result = await savetube.download(url.trim());
-      if (!result.status) {
-        return res.status(result.code || 500).json({ status: false, error: result.error });
-      }
-
-      return res.json({ status: true, creator: "Shadow.xyz", result: result.data, meta: { timestamp: new Date(), api: "Shadow.xyz" } });
     } catch (error) {
       res.status(500).json({ status: false, error: error.message });
     }

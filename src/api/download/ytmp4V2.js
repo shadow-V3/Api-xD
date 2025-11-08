@@ -62,20 +62,6 @@ const savetube = {
     if (!response.status) return response;
     return { status: true, code: 200, data: response.data.cdn };
   },
-  clean: (obj) => {
-    const result = {};
-    for (let key in obj) {
-      if (obj[key] !== null && obj[key] !== undefined && obj[key] !== "") {
-        if (typeof obj[key] === "object" && !Array.isArray(obj[key])) {
-          const nested = savetube.clean(obj[key]);
-          if (Object.keys(nested).length > 0) result[key] = nested;
-        } else {
-          result[key] = obj[key];
-        }
-      }
-    }
-    return result;
-  },
   downloadVideo: async (link) => {
     if (!link) return { status: false, code: 400, error: "Falta el enlace de YouTube." };
     const id = savetube.youtube(link);
@@ -98,36 +84,15 @@ const savetube = {
         key: decrypted.key,
       });
 
-      const sizeMB = decrypted.filesize ? (decrypted.filesize / (1024 * 1024)).toFixed(2) : null;
-
       const data = {
-        metadata: {
-          type: "video",
-          id: id,
-          url: `https://youtube.com/watch?v=${id}`,
-          title: decrypted.title,
-          description: decrypted.description,
-          thumbnail: decrypted.thumbnail || `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
-          duration: decrypted.duration,
-          durationFormatted: decrypted.duration ? `${Math.floor(decrypted.duration / 60)}:${decrypted.duration % 60}`.padStart(4, "0") : undefined,
-          size: sizeMB ? `${sizeMB} MB` : undefined,
-          views: decrypted.views,
-          publishedAgo: decrypted.ago,
-          author: {
-            name: decrypted.channel,
-            url: decrypted.channelUrl,
-          },
-        },
-        download: {
-          available: true,
-          quality: "360p",
-          url: dl.data.data.downloadUrl,
-          filename: `${decrypted.title} (360p).mp4`,
-        },
-        provider: "Shadow.xyz",
+        title: decrypted.title || "Desconocido",
+        duration: decrypted.duration ? `${Math.floor(decrypted.duration / 60)}:${String(decrypted.duration % 60).padStart(2, "0")}` : "Desconocido",
+        youtube_url: `https://youtube.com/watch?v=${id}`,
+        download_url: dl.data?.data?.downloadUrl || null,
+        thumbnail: decrypted.thumbnail || `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`
       };
 
-      return { status: true, code: 200, data: savetube.clean(data) };
+      return { status: true, code: 200, data };
     } catch (error) {
       return { status: false, code: 500, error: error.message };
     }
