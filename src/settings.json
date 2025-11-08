@@ -57,6 +57,19 @@
         }
       ]
     },
+    
+    {
+      "name": "Random nsfw",
+      "items": [
+        {
+          "name": "N S F W",
+          "desc": "Get random high-quality Blue Archive character images",
+          "path": "/nsfw/nsfw",
+          "status": "ready"
+        }
+      ]
+    },
+    
     {
       "name": "Image Makers",
       "items": [
