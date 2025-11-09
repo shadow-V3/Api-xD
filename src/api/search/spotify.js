@@ -6,6 +6,10 @@ const router = express.Router();
 let spotifyToken = null;
 let tokenExpiration = 0;
 
+// 🔥 Tus credenciales directas (solo para pruebas)
+const CLIENT_ID = "922f59f234b24a3a813eadf416e90632"; // 👉 reemplázalo
+const CLIENT_SECRET = "61b939433b044511b344171312118213"; // 👉 reemplázalo
+
 // 🔥 Función para obtener o reutilizar el token de Spotify
 async function getSpotifyToken() {
   const now = Date.now();
@@ -13,25 +17,25 @@ async function getSpotifyToken() {
   // Si el token aún es válido, lo reutilizamos
   if (spotifyToken && now < tokenExpiration) return spotifyToken;
 
-  const clientId = process.env.SPOTIFY_CLIENT_ID;
-  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
-
   const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: {
       Authorization:
-        "Basic " + Buffer.from(`${clientId}:${clientSecret}`).toString("base64"),
+        "Basic " + Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64"),
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: "grant_type=client_credentials",
   });
 
   const data = await response.json();
-  if (!response.ok) throw new Error(data.error_description || "Error al obtener token");
+  if (!response.ok) {
+    console.error("Error token Spotify:", data);
+    throw new Error(data.error_description || "Error al obtener token");
+  }
 
-  // Guardamos token y tiempo de expiración
+  // Guardamos token y expiración (1h)
   spotifyToken = data.access_token;
-  tokenExpiration = now + data.expires_in * 1000 - 60 * 1000; // resta 1 min por seguridad
+  tokenExpiration = now + data.expires_in * 1000 - 60 * 1000; // resta 1 min
   return spotifyToken;
 }
 
@@ -55,6 +59,7 @@ router.get("/search/spotify", async (req, res) => {
 
     if (!response.ok) {
       const errText = await response.text();
+      console.error("Error Spotify API:", errText);
       return res.status(response.status).json({ error: errText });
     }
 
