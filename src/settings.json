@@ -99,7 +99,7 @@
         {
           "name": "Spotify Search",
           "desc": "Search songs, artists or albums from Spotify",
-          "path": "/search/spotify?q=",
+          "path": "/search/spotify?query=",
           "status": "ready",
           "params": {
             "query": "Search text query"
